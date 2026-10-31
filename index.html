@@ -1,0 +1,189 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Reel Pattern</title>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Reel Pattern">
+<meta name="theme-color" content="#0e7c7b">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-192.png">
+<style>
+/* Layout: phone-first, one column, bottom tab bar; nautical-chart palette, one teal accent */
+:root{
+  --bg:#eef3f1; --panel:#f8fbfa; --ink:#12302f; --muted:#5b7473; --line:#cfdcd9;
+  --sea:#0e7c7b; --sea-soft:#d4ecea; --sand:#c98a3a; --good:#2f8a4e; --warn:#b8741a; --bad:#b4413a;
+  --body:-apple-system,BlinkMacSystemFont,"SF Pro Text",system-ui,sans-serif;
+  --display:"SF Pro Display",-apple-system,system-ui,sans-serif;
+  --mono:ui-monospace,"SF Mono",Menlo,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#0c1a1c; --panel:#122427; --ink:#e3efed; --muted:#8aa5a3; --line:#24403f;
+  --sea:#3fc1bb; --sea-soft:#163a3b; --sand:#e0a457; --good:#5cc27f; --warn:#e3a24a; --bad:#e57a72; color-scheme:dark}}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.45;-webkit-text-size-adjust:100%}
+main{max-width:640px;margin:0 auto;padding:calc(env(safe-area-inset-top,0px) + 14px) max(16px,env(safe-area-inset-right,0px)) calc(env(safe-area-inset-bottom,0px) + 96px) max(16px,env(safe-area-inset-left,0px));display:grid;gap:14px}
+h1{font-family:var(--display);font-size:28px;font-weight:700;margin:4px 0 0;letter-spacing:-.01em}
+h2{font-size:12px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin:0 0 10px;font-weight:600}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px}
+.muted{color:var(--muted);font-size:14px}
+.row{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px}
+.stat .k{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.stat .v{font-size:22px;font-weight:600;font-variant-numeric:tabular-nums}
+.stat .s{font-size:13px;color:var(--muted)}
+button,.btn{font:inherit;font-weight:600;border:0;border-radius:12px;padding:12px 16px;background:var(--sea);color:var(--panel);cursor:pointer;-webkit-tap-highlight-color:transparent}
+button.ghost{background:transparent;color:var(--sea);border:1px solid var(--line)}
+button.small{padding:6px 10px;font-size:14px;border-radius:9px}
+button:disabled{opacity:.5}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:2px solid var(--sand);outline-offset:2px}
+.mic{width:100%;padding:22px;font-size:20px;border-radius:16px;display:flex;align-items:center;justify-content:center;gap:10px}
+.mic.on{background:var(--bad)}
+.mic .dot{width:12px;height:12px;border-radius:50%;background:currentColor}
+.mic.on .dot{animation:pulse 1s infinite}
+@keyframes pulse{50%{opacity:.25}}
+@media (prefers-reduced-motion:reduce){.mic.on .dot{animation:none}}
+textarea,input,select{font:inherit;font-size:16px;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px;width:100%}
+textarea{min-height:96px;resize:vertical}
+label{display:grid;gap:4px;font-size:13px;color:var(--muted)}
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fields .full{grid-column:1/-1}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{font-size:12.5px;padding:3px 9px;border-radius:99px;background:var(--sea-soft);color:var(--ink);font-variant-numeric:tabular-nums}
+.chip.warn{background:transparent;border:1px dashed var(--warn);color:var(--warn)}
+.photo-prev{width:100%;max-height:260px;object-fit:cover;border-radius:12px;display:block}
+.catch{display:grid;grid-template-columns:72px 1fr;gap:12px;border-top:1px solid var(--line);padding-top:12px}
+.catch:first-child{border-top:0;padding-top:0}
+.thumb{width:72px;height:72px;border-radius:10px;object-fit:cover;background:var(--sea-soft)}
+.catch .t{font-weight:600}
+.list{display:grid;gap:12px}
+.spot{display:grid;grid-template-columns:1fr auto;gap:4px 10px;border-top:1px solid var(--line);padding-top:10px}
+.spot:first-child{border-top:0;padding-top:0}
+.spot select{padding:6px;font-size:14px;width:auto}
+nav{position:fixed;left:0;right:0;bottom:0;background:var(--panel);border-top:1px solid var(--line);display:flex;justify-content:space-around;padding:8px max(8px,env(safe-area-inset-right,0px)) calc(env(safe-area-inset-bottom,0px) + 8px) max(8px,env(safe-area-inset-left,0px));z-index:5}
+nav button{background:none;color:var(--muted);font-size:12px;padding:6px 10px;display:grid;justify-items:center;gap:2px;font-weight:600}
+nav button svg{width:24px;height:24px}
+nav button[aria-current="page"]{color:var(--sea)}
+.toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(env(safe-area-inset-bottom,0px) + 84px);background:var(--ink);color:var(--panel);padding:10px 16px;border-radius:12px;font-size:14px;z-index:9;max-width:90vw}
+.empty{text-align:center;padding:18px 8px;color:var(--muted)}
+.tide-bar{height:8px;border-radius:99px;background:var(--line);overflow:hidden;margin-top:6px}
+.tide-bar i{display:block;height:100%;background:var(--sea)}
+.note{font-size:13px;color:var(--muted);background:var(--sea-soft);border-radius:10px;padding:10px 12px}
+details summary{cursor:pointer;color:var(--sea);font-weight:600}
+</style>
+</head>
+<body>
+<main>
+  <header class="row" style="justify-content:space-between">
+    <h1>Reel Pattern</h1>
+    <span class="muted" id="netState"></span>
+  </header>
+
+  <!-- LOG -->
+  <section id="view-log" class="list">
+    <div class="card">
+      <button class="mic" id="micBtn" type="button"><span class="dot"></span><span id="micLbl">Tap and talk</span></button>
+      <p class="muted" style="margin:10px 2px 0">Say something like "Anclote flats, caught three reds about 24 inches on a gold spoon, released." No mic button? Tap the box below and use the microphone on your keyboard.</p>
+    </div>
+
+    <div class="card">
+      <label for="note">Your catch note</label>
+      <textarea id="note" placeholder="Where you are, what you caught, size, bait…"></textarea>
+      <div class="row" style="margin-top:10px">
+        <label class="btn ghost" for="photo" style="display:inline-block;border:1px solid var(--line);color:var(--sea);background:transparent;padding:10px 14px;border-radius:12px;font-weight:600;font-size:15px">Add photo</label>
+        <input id="photo" type="file" accept="image/*" hidden>
+        <span class="muted" id="photoName"></span>
+      </div>
+      <img id="photoPrev" class="photo-prev" alt="Catch photo preview" hidden style="margin-top:10px">
+    </div>
+
+    <div class="card" id="parsedCard" hidden>
+      <h2>Check it, then save</h2>
+      <div class="fields">
+        <label class="full" for="f-species">Fish (species × count)<input id="f-species" placeholder="Redfish ×3"></label>
+        <label for="f-len">Length (in)<input id="f-len" type="number" inputmode="decimal" step="0.5"></label>
+        <label for="f-wt">Weight (lb)<input id="f-wt" type="number" inputmode="decimal" step="0.1"></label>
+        <label for="f-bait">Bait / lure<input id="f-bait"></label>
+        <label for="f-kept">Kept or released<select id="f-kept"><option value="">Not said</option><option value="released">Released</option><option value="kept">Kept</option></select></label>
+        <label class="full" for="f-spot">Spot<select id="f-spot"></select></label>
+      </div>
+      <p class="muted" id="posLine" style="margin:10px 0 0"></p>
+    </div>
+
+    <button id="saveBtn" type="button" style="padding:16px;font-size:18px">Save catch</button>
+  </section>
+
+  <!-- NOW -->
+  <section id="view-now" class="list" hidden>
+    <div class="card">
+      <div class="row" style="justify-content:space-between">
+        <h2 style="margin:0">Conditions here</h2>
+        <button class="small ghost" id="refreshNow" type="button">Refresh</button>
+      </div>
+      <p class="muted" id="nowWhere" style="margin:6px 0 12px">Getting your location…</p>
+      <div id="nowBody"></div>
+    </div>
+  </section>
+
+  <!-- HISTORY -->
+  <section id="view-history" class="list" hidden>
+    <div class="card"><h2>Your catches</h2><div id="historyList" class="list"></div></div>
+  </section>
+
+  <!-- SPOTS -->
+  <section id="view-spots" class="list" hidden>
+    <div class="card">
+      <h2>Import spots from your boat unit</h2>
+      <p class="muted" style="margin-top:0">Pick your brand to see how to get the file onto your phone. Then tap Import and choose the file.</p>
+      <select id="brand" aria-label="Your unit's brand">
+        <option value="">Choose your brand</option>
+        <option value="garmin">Garmin</option>
+        <option value="lowrance">Lowrance or Simrad</option>
+        <option value="humminbird">Humminbird</option>
+        <option value="raymarine">Raymarine</option>
+      </select>
+      <div id="brandHelp" class="note" hidden style="margin-top:10px"></div>
+      <div class="row" style="margin-top:12px">
+        <label for="gpx" class="btn" style="display:inline-block;background:var(--sea);color:var(--panel);padding:12px 16px;border-radius:12px;font-weight:600;font-size:16px">Import spots file</label>
+        <input id="gpx" type="file" accept=".gpx,.GPX,application/gpx+xml,application/xml,text/xml" hidden>
+        <button class="ghost" id="addHere" type="button">Save this spot</button>
+      </div>
+      <p class="muted" id="importMsg" style="margin:10px 0 0"></p>
+    </div>
+    <div class="card">
+      <div class="row" style="justify-content:space-between">
+        <h2 style="margin:0">Your spots</h2>
+        <span class="muted" id="spotCount"></span>
+      </div>
+      <input id="spotFilter" placeholder="Search spots" style="margin:10px 0" aria-label="Search spots">
+      <div id="spotList" class="list"></div>
+    </div>
+    <div class="card">
+      <h2>Backup</h2>
+      <p class="muted" style="margin-top:0">Everything is stored on this phone only. Export a backup now and then and keep it in Files or iCloud Drive.</p>
+      <div class="row">
+        <button class="ghost" id="exportBtn" type="button">Export backup</button>
+        <label for="restore" class="btn ghost" style="display:inline-block;border:1px solid var(--line);color:var(--sea);background:transparent;padding:12px 16px;border-radius:12px;font-weight:600;font-size:16px">Restore backup</label>
+        <input id="restore" type="file" accept=".json,application/json" hidden>
+      </div>
+    </div>
+  </section>
+</main>
+
+<nav aria-label="Sections">
+  <button data-view="log" aria-current="page" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0 0 14 0M12 18v4"/></svg>Log</button>
+  <button data-view="now" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M2 15c2.5 0 2.5-2 5-2s2.5 2 5 2 2.5-2 5-2 2.5 2 5 2M2 20c2.5 0 2.5-2 5-2s2.5 2 5 2 2.5-2 5-2 2.5 2 5 2"/><circle cx="12" cy="6" r="3"/></svg>Now</button>
+  <button data-view="history" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12c4-6 10-6 14 0-4 6-10 6-14 0z"/><path d="M17 12l4-3v6z"/><circle cx="8" cy="11" r="1" fill="currentColor"/></svg>Catches</button>
+  <button data-view="spots" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s7-6.5 7-12a7 7 0 0 0-14 0c0 5.5 7 12 7 12z"/><circle cx="12" cy="10" r="2.5"/></svg>Spots</button>
+</nav>
+
+<script src="parse.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
